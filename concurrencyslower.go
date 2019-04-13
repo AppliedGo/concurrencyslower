@@ -155,7 +155,7 @@ The prefix `-4` confirms that the test uses all four logical cores. But wait, wh
 
 ## Hardware acceleration fires back
 
-To explain this counterintuitive result, we have to take a look below all software, right into the CPU chip.
+To explain this counter-intuitive result, we have to take a look at what lies beneath all software---the CPU chip.
 
 The problem starts at the point where cache memory helps speeding up each CPU core.
 
@@ -279,9 +279,15 @@ Step 3. Run the benchmark.
 
 
 ## Odds and ends
-## Some remarks
-## Tips
+
+Future CPU architectures and/or future Go runtimes might be able to alleviate this problem. so if you run this code, the benchmarks might not show the same effect as in this article. In this case, consider yourself lucky.
+
+In general, it is not a good idea to have goroutines update a global variable. Remember the Go proverb: *Don't communicate by sharing memory, share memory by communicating.*
+
+
 ## Links
+
+[Cache coherence](https://en.wikipedia.org/wiki/Cache_coherence) on Wikipedia
 
 
 **Happy coding!**
