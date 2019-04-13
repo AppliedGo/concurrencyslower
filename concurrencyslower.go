@@ -288,6 +288,7 @@ Future CPU architectures and/or future Go runtimes might be able to alleviate th
 
 In general, it is not a good idea to have goroutines update a global variable. Remember the Go proverb: *Don't communicate by sharing memory, share memory by communicating.*
 
+This blog post was inspired by a discussion thread on Reddit.
 
 ## Links
 
