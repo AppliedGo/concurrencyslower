@@ -26,7 +26,7 @@ email = "chris@appliedgo.net"
 date = "2019-04-10"
 draft = "true"
 categories = ["Concurrent Programming"]
-tags = ["goroutine", "cacheline", "cpu architecture"]
+tags = ["goroutine", "cache line", "cpu architecture"]
 articletypes = ["Tutorial"]
 +++
 
@@ -172,31 +172,31 @@ Now when a CPU core changes a value in its local cache, it has to be synchronize
 !HYPE[cpucache](cpucache.html)
 
 
-## The cacheline
+## The cache line
 
-To synchronize cache and main memory in an efficient way, data is synchronized in blocks of typically 64 bit. These blocks are called cachelines.
+To synchronize cache and main memory in an efficient way, data is synchronized in blocks of typically 64 bit. These blocks are called cache lines.
 
-So when a cached value changes, the whole cacheline gets synchronized back to main memory. Likewise, the caches of all other CPU cores that contain this cacheline must now also sync this cacheline to avoid operating on outdated data.
+So when a cached value changes, the whole cache line gets synchronized back to main memory. Likewise, the caches of all other CPU cores that contain this cache line must now also sync this cache line to avoid operating on outdated data.
 
 
 ## Neighborhood
 
-How does this affect our code? Remember that the concurrent loop uses a global slice to store the intermediate results. The elements of a slice are stored in a contiguous space. With high probability, two adjacent slice elements will share the same cacheline.
+How does this affect our code? Remember that the concurrent loop uses a global slice to store the intermediate results. The elements of a slice are stored in a contiguous space. With high probability, two adjacent slice elements will share the same cache line.
 
 And now the drama begins.
 
-`n` CPU cores with `n` caches repeatedly read from and write to slice elements that are all in the same cacheline. So whenever one CPU core updates "its" slice element with a new sum, the cachelines of all other CPU's get invalidated. The changed cacheline must be written back to main memory, and all other caches must update their respective cacheline with new data. *Even though each core accesses a different part of the slice!*
+`n` CPU cores with `n` caches repeatedly read from and write to slice elements that are all in the same cache line. So whenever one CPU core updates "its" slice element with a new sum, the cache lines of all other CPU's get invalidated. The changed cache line must be written back to main memory, and all other caches must update their respective cache line with new data. *Even though each core accesses a different part of the slice!*
 
 This consumes precious time---more than the time that the serial loop needs for updating its single sum variable.
 
-This is why our concurrent loop needs more time than the serial loop. All the concurrent updates to the slice cause a frantic cacheline sync dance.
+This is why our concurrent loop needs more time than the serial loop. All the concurrent updates to the slice cause a hectic cache line sync dance.
 
 !HYPE[syncdance](syncdance.html)
 
 
 ## Spread the ~~word~~ data!
 
-Now that we know the reason for the surprsing slowdown, the cure is obvious. We have to turn the slice into `n` individual variables that hopefully will be stored far enough apart from each other so that they do not share the same cacheline.
+Now that we know the reason for the surprsing slowdown, the cure is obvious. We have to turn the slice into `n` individual variables that hopefully will be stored far enough apart from each other so that they do not share the same cache line.
 
 So let's change our concurrent loop so that each goroutine stores its intermediate sum in a goroutine-local variable. In order to pass the result back to the main goroutine, we also have to add a channel. This in turn allows us to remove the wait group, because channels are not only a means for communication but also an elegant synchronization mechanism.
 
@@ -258,7 +258,7 @@ ok      github.com/appliedgo/concurrencyslower  23.807s
 
 Spreading the intermediate sums across individual local variables, rather than having them in a single slice, definitely helped us escaping the cache sync problem.
 
-However, how can we be sure that the individual variables never share the same cacheline? Well, starting a new goroutine allocates between 2KB and 8KB of data on the stack, which is way more than the typical cacheline size of 64 bytes. And since the intermediate sum variable is not referenced from anywhere outside the goroutine that creates it, it does not escape to the heap (where it could end up near to one of the other intermediate sum variables). So we can be pretty sure that no two intermediate sum variables will end up in the same cacheline.
+However, how can we be sure that the individual variables never share the same cache line? Well, starting a new goroutine allocates between 2KB and 8KB of data on the stack, which is way more than the typical cache line size of 64 bytes. And since the intermediate sum variable is not referenced from anywhere outside the goroutine that creates it, it does not escape to the heap (where it could end up near to one of the other intermediate sum variables). So we can be pretty sure that no two intermediate sum variables will end up in the same cache line.
 
 
 
@@ -276,6 +276,8 @@ Step 2: `cd` to the source code directory.
 Step 3. Run the benchmark.
 
     go test -bench .
+
+**NOTE:** As of this writing, Go 1.12 is the current version of Go. If you have the experimental Go modules enabled, `go get` will fetch the sources into `$GOPATH/pkg/mod/github.com/appliedgo/concurrencyslower@v0,0.0-<timestamp>-<hash>` instead of the aforementioned path.
 
 
 ## Odds and ends
