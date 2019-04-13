@@ -277,7 +277,9 @@ Step 3. Run the benchmark.
 
     go test -bench .
 
-**NOTE:** As of this writing, Go 1.12 is the current version of Go. If you have the experimental Go modules enabled, `go get` will fetch the sources into `$GOPATH/pkg/mod/github.com/appliedgo/concurrencyslower@v0,0.0-<timestamp>-<hash>` instead of the aforementioned path.
+**NOTE:** As of this writing, Go 1.12 is the current version of Go. If you have the experimental Go modules enabled, `go get` will fetch the sources into `$GOPATH/pkg/mod/github.com/appliedgo/concurrencyslower@v<n,n.n>-<timestamp>-<hash>` instead of the aforementioned path.
+
+If `$GOPATH` is missing, `go get` uses `~/go` or `%USERPROFILE%\go` by default.
 
 
 ## Odds and ends
