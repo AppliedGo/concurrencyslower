@@ -174,7 +174,7 @@ Now when a CPU core changes a value in its local cache, it has to be synchronize
 
 ## The cache line
 
-To synchronize cache and main memory in an efficient way, data is synchronized in blocks of typically 64 bit. These blocks are called cache lines.
+To synchronize cache and main memory in an efficient way, data is synchronized in blocks of typically 64 bytes. These blocks are called cache lines.
 
 So when a cached value changes, the whole cache line gets synchronized back to main memory. Likewise, the caches of all other CPU cores that contain this cache line must now also sync this cache line to avoid operating on outdated data.
 
