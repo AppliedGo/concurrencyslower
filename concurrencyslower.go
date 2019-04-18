@@ -76,7 +76,7 @@ func ConcurrentSum() int {
 	// Get the number of available logical cores. Usually this is 2*c where c is the number of physical cores and 2 is the number of hyperthreads per core.
 	n := runtime.GOMAXPROCS(0)
 
-	// We need to collect the results from the `n` goroutines somewhere. How about a gloaal slice with one element for every goroutine.
+	// We need to collect the results from the `n` goroutines somewhere. How about a global slice with one element for every goroutine.
 	sums := make([]int, n)
 
 	// Now we can spawn the goroutines. A `WaitGroup` helps us detecting when all goroutines have finished.
