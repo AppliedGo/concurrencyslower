@@ -89,12 +89,13 @@ func ConcurrentSum() int {
 			// Split the "input" into n chunks that do not overlap.
 			start := (limit / n) * i
 			end := start + (limit / n)
+			s := 0
 
 			// Run the loop over the given chunk.
 			for j := start; j < end; j += 1 {
-				sums[i] += j
+				s += j
 			}
-
+			sums[i] = s
 			// Tell the `WaitGroup` that this goroutine has completet its task.
 			wg.Done()
 		}(i)
