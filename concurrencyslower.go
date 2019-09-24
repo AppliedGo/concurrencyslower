@@ -196,7 +196,7 @@ This is why our concurrent loop needs more time than the serial loop. All the co
 
 ## Spread the ~~word~~ data!
 
-Now that we know the reason for the surprsing slowdown, the cure is obvious. We have to turn the slice into `n` individual variables that hopefully will be stored far enough apart from each other so that they do not share the same cache line.
+Now that we know the reason for the surprising slowdown, the cure is obvious. We have to turn the slice into `n` individual variables that hopefully will be stored far enough apart from each other so that they do not share the same cache line.
 
 So let's change our concurrent loop so that each goroutine stores its intermediate sum in a goroutine-local variable. In order to pass the result back to the main goroutine, we also have to add a channel. This in turn allows us to remove the wait group, because channels are not only a means for communication but also an elegant synchronization mechanism.
 
